@@ -6,7 +6,7 @@ from scipy.io import wavfile, loadmat
 import matplotlib.pyplot as plt
 import numpy as np
 import utility
-from pydub import AudioSegment
+from pydub import AudioSegment as aus
 
 
 """If on the next iteration current_sample_index will exceed len(data)
@@ -33,6 +33,23 @@ def calc_increment(aIndex):
         return -1
     return 1
 
+def combine_files():
+    #TODO read in each file in the tmp directory and concat onto an audio segment file
+    
+
+def write_pieces(data, samplerate):
+    for row in range(len(data)):
+        left = data[row][0]
+        right = data[row][1]
+        convolved_data = [0, 0]
+        convolved_data[0] = left
+        convolved_data[1] = right
+        normalized = utility.pcm2float(
+            np.asarray(convolved_data).T.astype("int16"), "float32"
+        )
+        soundToPlay = np.array([normalized[:, 0], normalized[:, 1]], dtype="float32")
+        wavfile.write(f"./tmp/piece{row}.wav", samplerate, soundToPlay.T)
+
 
 def write_to_file(left, right, samplerate):
     convolved_data = [0, 0]
@@ -51,6 +68,7 @@ def write_to_file(left, right, samplerate):
 
 def convert_audio(file):
     # declare variables
+    convolved = []
     result_left = []
     result_right = []
     increment = 1
@@ -120,8 +138,11 @@ def convert_audio(file):
             convolved_right = np.append(convolved_right, np.zeros(abs(delay)))
 
         """Append convolved to results"""
-        result_left = np.append(result_left, convolved_left)
-        result_right = np.append(result_right, convolved_right)
+        # result_left = np.append(result_left, convolved_left)
+        # result_right = np.append(result_right, convolved_right)
+
+        """Instead of appending the data, append the arrays and write to files later"""
+        convolved.append([convolved_left, convolved_right])
 
         """Increment left/right channels and index"""
         left_channel = left_channel[frame_size:]
@@ -130,9 +151,11 @@ def convert_audio(file):
     """END OF WHILE LOOP"""
 
     print("Writing to file...")
-    write_to_file(result_left, result_right, samplerate)
+    write_pieces(convolved, samplerate)
+    # write_to_file(result_left, result_right, samplerate)
     print("Finished writing")
 
+    combined_files = combine_files()
 
 thistle = "thistle.wav"
 omt = "OMT.wav"
