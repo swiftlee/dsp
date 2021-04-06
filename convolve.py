@@ -1,6 +1,7 @@
 # write all to individual files
 # go back over and concat them
 # make sure it comes out to same file size
+import os
 from scipy import signal
 from scipy.io import wavfile, loadmat
 import matplotlib.pyplot as plt
@@ -33,9 +34,20 @@ def calc_increment(aIndex):
         return -1
     return 1
 
-def combine_files():
-    #TODO read in each file in the tmp directory and concat onto an audio segment file
-    
+
+def create_combined_file():
+    # TODO read in each file in the tmp directory and concat onto an audio segment file
+    dir = "./tmp/"
+    filelist = os.listdir(dir)
+    combined = aus.empty()
+    for filename in sorted(filelist):
+        filename = dir + filename
+        segment = aus.from_wav(filename)
+        combined = combined + segment
+        # print(filename)
+
+    combined.export("combined.wav", format="wav")
+
 
 def write_pieces(data, samplerate):
     for row in range(len(data)):
@@ -48,7 +60,8 @@ def write_pieces(data, samplerate):
             np.asarray(convolved_data).T.astype("int16"), "float32"
         )
         soundToPlay = np.array([normalized[:, 0], normalized[:, 1]], dtype="float32")
-        wavfile.write(f"./tmp/piece{row}.wav", samplerate, soundToPlay.T)
+        filename = f"./tmp/0{row}piece.wav" if row < 10 else f"./tmp/{row}piece.wav"
+        wavfile.write(filename, samplerate, soundToPlay.T)
 
 
 def write_to_file(left, right, samplerate):
@@ -87,7 +100,7 @@ def convert_audio(file):
     """Set the left/right channel and frame size variables"""
     left_channel = data[:, 0]  # get all rows in column 0 (left channel)
     right_channel = data[:, 1]  # get all rows in column 1 (right channel)
-    frame_size = int(np.ceil(samplerate))
+    frame_size = int(np.ceil(samplerate / 2))
 
     """Load in and initialize the relevant variables from the HRTF"""
     hrtf = loadmat("CIPIC_58_HRTF.mat")
@@ -155,7 +168,8 @@ def convert_audio(file):
     # write_to_file(result_left, result_right, samplerate)
     print("Finished writing")
 
-    combined_files = combine_files()
+    create_combined_file()
+
 
 thistle = "thistle.wav"
 omt = "OMT.wav"
