@@ -110,6 +110,13 @@ while current_sample_index < len(data):
 
     right_channel = right_channel[frame_size:]
     current_sample_index += frame_size
+
+    # if current_sample_index == (frame_size * 6):
+    #     result_left = np.append(result_left[(frame_size * 4) :], wav_left)
+    #     result_right = np.append(result_right[(frame_size * 4) :], wav_right)
+    #     print("breaking out")
+    #     break
+
 # END OF WHILE LOOP
 
 
@@ -133,3 +140,8 @@ wavfile.write("scipy_float32.wav", samplerate, soundToPlay.T)
 wavfile.write("scipy_pcm16.wav", samplerate, utility.float2pcm(soundToPlay.T, "int16"))
 
 # # https://docs.scipy.org/doc/scipy/reference/signal.html
+
+
+# write all to individual files
+# go back over and concat them
+# make sure it comes out to same file size
