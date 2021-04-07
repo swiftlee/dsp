@@ -49,7 +49,15 @@ def create_combined_file():
     combined.export("combined.wav", format="wav")
 
 
+def clear_dir():
+    files = os.listdir("./tmp/")
+    for f in files:
+        os.remove("./tmp/" + f)
+
+
 def write_pieces(data, samplerate):
+    clear_dir()
+    filelist = os.listdir("./tmp")
     for row in range(len(data)):
         left = data[row][0]
         right = data[row][1]
@@ -59,6 +67,7 @@ def write_pieces(data, samplerate):
         normalized = utility.pcm2float(
             np.asarray(convolved_data).T.astype("int16"), "float32"
         )
+
         soundToPlay = np.array([normalized[:, 0], normalized[:, 1]], dtype="float32")
         filename = f"./tmp/0{row}piece.wav" if row < 10 else f"./tmp/{row}piece.wav"
         wavfile.write(filename, samplerate, soundToPlay.T)
@@ -100,7 +109,7 @@ def convert_audio(file):
     """Set the left/right channel and frame size variables"""
     left_channel = data[:, 0]  # get all rows in column 0 (left channel)
     right_channel = data[:, 1]  # get all rows in column 1 (right channel)
-    frame_size = int(np.ceil(samplerate / 2))
+    frame_size = int(np.ceil(samplerate))
 
     """Load in and initialize the relevant variables from the HRTF"""
     hrtf = loadmat("CIPIC_58_HRTF.mat")
