@@ -1,6 +1,8 @@
-# write all to individual files
-# go back over and concat them
-# make sure it comes out to same file size
+"""TODO: samplerate might have to be base 2, check convolve documentation for this,
+Look into what hrir_r/l are, see if we can put something else in there that we know (padd zeroes to fit size)
+Print sizes of lft/rgt and wav_left/right
+"""
+
 import os
 from scipy import signal
 from scipy.io import wavfile, loadmat
@@ -8,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import utility
 from pydub import AudioSegment as aus
-
+from progress.bar import Bar
 
 """If on the next iteration current_sample_index will exceed len(data)
 we must adjust the frame size to ensure we convolve the end of the song file"""
@@ -40,11 +42,13 @@ def create_combined_file():
     dir = "./tmp/"
     filelist = os.listdir(dir)
     combined = aus.empty()
-    for filename in sorted(filelist):
-        filename = dir + filename
-        segment = aus.from_wav(filename)
-        combined = combined + segment
-        # print(filename)
+    with Bar("Processing", max=len(filelist)) as bar:
+        for filename in sorted(filelist):
+            filename = dir + filename
+            segment = aus.from_wav(filename)
+            combined = combined + segment
+            # print(filename)
+            bar.next()
 
     combined.export("combined.wav", format="wav")
 
@@ -105,11 +109,13 @@ def convert_audio(file):
     np.set_printoptions(precision=6)
 
     samplerate, data = wavfile.read(file)
+    print(f"samplerate {samplerate}")
 
     """Set the left/right channel and frame size variables"""
     left_channel = data[:, 0]  # get all rows in column 0 (left channel)
     right_channel = data[:, 1]  # get all rows in column 1 (right channel)
-    frame_size = int(np.ceil(samplerate))
+    frame_size = int(np.ceil(samplerate / 2))
+    # frame_size = 200
 
     """Load in and initialize the relevant variables from the HRTF"""
     hrtf = loadmat("CIPIC_58_HRTF.mat")
@@ -137,6 +143,7 @@ def convert_audio(file):
         convolved_right = []
 
         """Get left/right squeeze values and delay"""
+        # check what hrir_l and hrir_r are
         lft = np.squeeze(hrir_l[aIndex, eIndex, :])
         rgt = np.squeeze(hrir_r[aIndex, eIndex, :])
         delay = int(ITD[aIndex, eIndex])
@@ -148,6 +155,9 @@ def convert_audio(file):
         """Perform the convolutions"""
         # convolved_left = np.asarray(signal.convolve(wav_left, lft, mode="same"))
         # convolved_right = np.asarray(signal.convolve(wav_right, rgt, mode="same"))
+        print(
+            f"lft: {len(lft)} WL: {len(wav_left)} rgt: {len(rgt)} WR: {len(wav_right)}"
+        )
         convolved_left = np.asarray(signal.convolve(lft, wav_left))
         convolved_right = np.asarray(signal.convolve(rgt, wav_right))
 
@@ -175,8 +185,8 @@ def convert_audio(file):
     print("Writing to file...")
     write_pieces(convolved, samplerate)
     # write_to_file(result_left, result_right, samplerate)
-    print("Finished writing")
 
+    print("Creating combined file...")
     create_combined_file()
 
 
