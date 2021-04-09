@@ -1,0 +1,24 @@
+Jon's best fit: {'index': 38, 'values': {'pinna_value': 1.928912554164043, 'angle_value': 0.04868194151822902, 'body_value': 16.562651288571942}}
+
+Blake's best fit: {'index': 37, 'values': {'pinna_value': 2.162361285056278, 'angle_value': 0.05902891377735653, 'body_value': 47.044084142959036}}
+
+Sam's best fit: {'index': 32, 'values': {'pinna_value': 25.22023164071547, 'angle_value': 0.6757640475676863, 'body_value': 8.138737941008003}}
+
+Dean's best fit: {'index': 12, 'values': {'pinna_value': 0.762461381889608, 'angle_value': 0.04261557875352784, 'body_value': 14.108423229794425}}
+
+Jon's best fit: {'index': 38, 'values': {'pinna_value': 1.928912554164043, 'angle_value': 0.04868194151822902, 'body_value': 16.562651288571942}}
+
+Blake's best fit: {'index': 37, 'values': {'pinna_value': 2.162361285056278, 'angle_value': 0.05902891377735653, 'body_value': 47.044084142959036}}
+
+Sam's best fit: {'index': 32, 'values': {'pinna_value': 25.22023164071547, 'angle_value': 0.6757640475676863, 'body_value': 8.138737941008003}}
+
+Dean's best fit: {'index': 12, 'values': {'pinna_value': 0.762461381889608, 'angle_value': 0.04261557875352784, 'body_value': 14.108423229794425}}
+
+Jon's best fit: {'index': 38, 'values': {'pinna_value': 1.928912554164043, 'angle_value': 0.04868194151822902, 'body_value': 16.562651288571942}}
+
+Blake's best fit: {'index': 37, 'values': {'pinna_value': 2.162361285056278, 'angle_value': 0.05902891377735653, 'body_value': 47.044084142959036}}
+
+Sam's best fit: {'index': 32, 'values': {'pinna_value': 25.22023164071547, 'angle_value': 0.6757640475676863, 'body_value': 8.138737941008003}}
+
+Dean's best fit: {'index': 12, 'values': {'pinna_value': 0.762461381889608, 'angle_value': 0.04261557875352784, 'body_value': 14.108423229794425}}
+
