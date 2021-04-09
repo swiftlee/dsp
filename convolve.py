@@ -122,7 +122,7 @@ def convert_audio(file):
     hrir_r = hrtf["hrir_r"]
     hrir_l = hrtf["hrir_l"]
     ITD = hrtf["ITD"]  # 2D array with many columns/rows
-
+    #
     print("Convolving...")
     done = False
     while current_sample_index < len(data):
