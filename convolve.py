@@ -43,7 +43,7 @@ def create_combined_file():
     filelist = os.listdir(dir)
     combined = aus.empty()
     with Bar("Processing", max=len(filelist)) as bar:
-        for filename in sorted(filelist):
+        for filename in sorted(filelist, key=lambda x: int(x.split("piece")[0])):
             filename = dir + filename
             segment = aus.from_wav(filename)
             combined = combined + segment
@@ -54,14 +54,23 @@ def create_combined_file():
 
 
 def clear_dir():
-    files = os.listdir("./tmp/")
-    for f in files:
-        os.remove("./tmp/" + f)
+    path = "./tmp/"
+    if os.path.isdir(path):
+        files = os.listdir(path)
+        for f in files:
+            os.remove("./tmp/" + f)
+        return True
+    return False
+
+
+def create_dir_or_clear():
+    dir_exists = clear_dir()
+    if not dir_exists:
+        os.mkdir("./tmp")
 
 
 def write_pieces(data, samplerate):
-    clear_dir()
-    filelist = os.listdir("./tmp")
+    create_dir_or_clear()
     for row in range(len(data)):
         left = data[row][0]
         right = data[row][1]
@@ -122,7 +131,7 @@ def convert_audio(file):
     hrir_r = hrtf["hrir_r"]
     hrir_l = hrtf["hrir_l"]
     ITD = hrtf["ITD"]  # 2D array with many columns/rows
-    #
+
     print("Convolving...")
     done = False
     while current_sample_index < len(data):
