@@ -1,5 +1,8 @@
 from scipy.io import wavfile, loadmat
 from scipy.signal import butter, lfilter
+import utility
+import numpy as np
+from pydub import AudioSegment
 
 class Audio:
 
@@ -8,6 +11,7 @@ class Audio:
     self.fs, self.data = wavfile.read(filepath)
     self.left_channel = self.data[:, 0]
     self.right_channel = self.data[:, 1]
+    self.name = filepath.replace(".wav", "")
     
   def bandpass(self, min, max, order=5):
     nyq = 0.5 * self.fs
@@ -25,3 +29,22 @@ class Audio:
     
   def write_result(self, filename, audio_data):
     wavfile.write(filename, self.fs, audio_data)
+
+  def filter_wav(self, low, high, section, order=5):
+    left = self.bandpass_filter(self.left_channel, low, high, order)
+    right = self.bandpass_filter(self.right_channel, low, high, order)
+    res = [left, right]
+    normalized = utility.pcm2float(np.asarray(res).T.astype("int16"), "float32")
+    soundToPlay = np.array([normalized[:, 0], normalized[:, 1]], dtype="float32")
+    filename = f"{self.name}_filtered_{section}.wav"
+    self.write_result(filename, utility.float2pcm(soundToPlay.T))
+    return filename
+  
+  def pan_wav(self, section, location):
+    audio = AudioSegment.from_wav(f"{self.name}_filtered_{section}.wav")
+    audio = audio.pan(location)
+    # audio.export(f"{self.name}_panned_{section}.wav", format="wav")
+    return audio
+
+
+  # def mix_wav(self):
