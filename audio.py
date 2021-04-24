@@ -12,6 +12,7 @@ class Audio:
     self.left_channel = self.data[:, 0]
     self.right_channel = self.data[:, 1]
     self.name = name.replace(".wav", "")
+    self.volume = AudioSegment.from_wav(filepath).max_dBFS
     
   def bandpass(self, min, max, order=5):
     nyq = 0.5 * self.fs

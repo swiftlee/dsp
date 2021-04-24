@@ -1,12 +1,14 @@
 from audio import Audio
 import matplotlib.pyplot as plt
-from scipy.signal import freqz
 import numpy as np
 import utility
 from pathlib import Path
 import os
 import glob
 
+def match_target_amplitude(sound, target_dBFS):
+    change_in_dBFS = target_dBFS - sound.dBFS
+    return sound.apply_gain(change_in_dBFS)
 
 def run():
   songs = {
@@ -25,8 +27,8 @@ def run():
   order = 3
 
   for name, path in songs.items():
-    print(f"Converting {name}...")
     audio_file = Audio(f"./audio/{path}", name)
+    print(f"Converting {name} with max volume {audio_file.volume} dB...")
     panned_results = []
 
     """
@@ -45,6 +47,12 @@ def run():
     final = panned_results[0]
     for panned_audio in panned_results[1:]:
       final = final.overlay(panned_audio)
+
+    # Increase volume a bit
+    if path == "truth.wav":
+      final = final + 4
+    else:
+      final = final + 2
 
     Path("./out").mkdir(parents=True, exist_ok=True)
     final.export(f"./out/{name}", format="wav")
