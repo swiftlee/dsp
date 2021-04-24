@@ -7,21 +7,27 @@ from pydub import AudioSegment
 
 thistle = Audio("thistle.wav")
 
-low_stop = 500.0
-high_stop = 1250.0
+instruments = {
+  "dbl_bass": [20.0, 13959.0],
+  "cellos": [40.0, 9825.0],
+  "violas": [100.0, 10000.0],
+  "violins": [140.0, 23450.0],
+}
+
 order = 5
 
-filtered_left = thistle.bandpass_filter(thistle.left_channel, low_stop, high_stop, 5)
-filtered_right = thistle.bandpass_filter(thistle.right_channel, low_stop, high_stop, 5)
-filtered_result = [0, 0]
-filtered_result[0] = filtered_left
-filtered_result[1] = filtered_right
-normalized = utility.pcm2float(np.asarray(filtered_result).T.astype("int16"), "float32")
-soundToPlay = np.array([normalized[:, 0], normalized[:, 1]], dtype="float32")
-thistle.write_result('thistle-filtered.wav', utility.float2pcm(soundToPlay.T))
+#bandpass double bass 0 hz to 13959 hz
+#bandpass celli 40 hz to 9825 hz
+#bandpass violas 100 hz to 10000 hz
+#bandpass violins 140 hz to 30000 hz
 
-filtered_thistle = AudioSegment.from_wav("thistle-filtered.wav")
-filtered_thistle = filtered_thistle.pan(-1)
-filtered_thistle.export("thistle-panned.wav", format="wav")
+for section, freqz in instruments.items():
+  print(f"Filtering {section}... from {freqz[0]} Hz -> {freqz[1]}")
+  thistle.filter_wav(*freqz, section, order)
+print("Done filtering!!!")
 
 
+# PANNING CODE
+# filtered_thistle = AudioSegment.from_wav("thistle-filtered.wav")
+# filtered_thistle = filtered_thistle.pan(-1)
+# filtered_thistle.export("thistle-panned.wav", format="wav")
