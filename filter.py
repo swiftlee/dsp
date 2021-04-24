@@ -3,51 +3,60 @@ import matplotlib.pyplot as plt
 from scipy.signal import freqz
 import numpy as np
 import utility
-
-thistle = Audio("thistle.wav")
-
-instruments = {
-  "dbl_bass": { "freqz": [20.0, 13959.0], "pan": 0.1 },
-  "cellos": {"freqz": [40.0, 9825.0], "pan": 1},
-  "violas": {"freqz": [100.0, 10000.0], "pan": -1},
-  "violins":{"freqz": [140.0, 23450.0], "pan": -0.1},
-}
+from pathlib import Path
+import os
+import glob
 
 
-order = 5
+def run():
+  songs = {
+    "A Gift Of Thistle-Gatorchestrators Filter.wav": "thistle.wav",
+    "A Knight of the Seven Kingdoms-Gatorchestrators Filter.wav": "kingdoms.wav",
+    "Truth-Gatorchestrators Filter.wav": "truth.wav"
+  }
 
-panned_results = []
+  instruments = {
+    "dbl_bass": { "freqz": [20.0, 13959.0], "pan": 0.8 },
+    "cellos": {"freqz": [40.0, 9825.0], "pan": 0.5},
+    "violas": {"freqz": [100.0, 10000.0], "pan": -0.25},
+    "violins":{"freqz": [140.0, 20000.0], "pan": -0.8},
+  }
 
-for section, metadata in instruments.items():
-  freqz = metadata["freqz"]
-  location = metadata["pan"]
-  print(f"Filtering {section}... from {freqz[0]} Hz -> {freqz[1]}")
-  thistle.filter_wav(*freqz, section, order)
-  panned_results.append(thistle.pan_wav(section, location))
+  order = 3
 
-print("Done filtering!!!") 
-print("Results: ", panned_results)
+  for name, path in songs.items():
+    print(f"Converting {name}...")
+    audio_file = Audio(f"./audio/{path}", name)
+    panned_results = []
+
+    """
+    Filtering and panning the song for each frequency range
+    """
+    for section, metadata in instruments.items():
+      freqz = metadata["freqz"]
+      location = metadata["pan"]
+      # print(f"Filtering {section}... from {freqz[0]} Hz -> {freqz[1]}")
+      audio_file.filter_wav(*freqz, section, order)
+      panned_results.append(audio_file.pan_wav(section, location))
+
+    """
+    Mixing the panned results and writing to a single audio output file
+    """
+    final = panned_results[0]
+    for panned_audio in panned_results[1:]:
+      final = final.overlay(panned_audio)
+
+    Path("./out").mkdir(parents=True, exist_ok=True)
+    final.export(f"./out/{name}", format="wav")
+    
+    print(f"Finished conversion, deleting files...")
+
+    files = glob.glob("./tmp/*", recursive=False)
+    for f in files:
+      try:
+        os.remove(f)
+      except OSError as e:
+        print(f"Error: {f} : {e.strerror}")
 
 
-
-
-
-
-
-# PANNING CODE
-# filtered_thistle = AudioSegment.from_wav("thistle-filtered.wav")
-# filtered_thistle = filtered_thistle.pan(-1)
-# filtered_thistle.export("thistle-panned.wav", format="wav")
-
-# instruments = {
-#   "dbl_bass": [100.0, 1400.0],
-#   "cellos": [65.0, 659.0],
-#   "violas": [130.0, 1046.0],
-#   "violins": [196.0, 2637.0],
-# }
-
-
-#bandpass double bass 0 hz to 13959 hz
-#bandpass celli 40 hz to 9825 hz
-#bandpass violas 100 hz to 10000 hz
-#bandpass violins 140 hz to 30000 hz
+run()

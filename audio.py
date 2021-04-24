@@ -6,12 +6,12 @@ from pydub import AudioSegment
 
 class Audio:
 
-  def __init__(self, filepath):
+  def __init__(self, filepath, name):
     self.filepath = filepath
     self.fs, self.data = wavfile.read(filepath)
     self.left_channel = self.data[:, 0]
     self.right_channel = self.data[:, 1]
-    self.name = filepath.replace(".wav", "")
+    self.name = name.replace(".wav", "")
     
   def bandpass(self, min, max, order=5):
     nyq = 0.5 * self.fs
@@ -24,11 +24,12 @@ class Audio:
   def bandpass_filter(self, audio_data, min, max, order=5):
     b, a = self.bandpass(min, max, order=order)
     y = lfilter(b, a, audio_data)
-    print(len(y))
     return y
     
   def write_result(self, filename, audio_data):
-    wavfile.write(filename, self.fs, audio_data)
+    from pathlib import Path
+    Path("./tmp").mkdir(parents=True, exist_ok=True)
+    wavfile.write(f"./tmp/{filename}", self.fs, audio_data)
 
   def filter_wav(self, low, high, section, order=5):
     left = self.bandpass_filter(self.left_channel, low, high, order)
@@ -41,10 +42,7 @@ class Audio:
     return filename
   
   def pan_wav(self, section, location):
-    audio = AudioSegment.from_wav(f"{self.name}_filtered_{section}.wav")
+    audio = AudioSegment.from_wav(f"./tmp/{self.name}_filtered_{section}.wav")
     audio = audio.pan(location)
     # audio.export(f"{self.name}_panned_{section}.wav", format="wav")
     return audio
-
-
-  # def mix_wav(self):
