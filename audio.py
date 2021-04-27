@@ -1,8 +1,9 @@
 from scipy.io import wavfile, loadmat
-from scipy.signal import butter, lfilter
+from scipy.signal import butter, lfilter, convolve
 import utility
 import numpy as np
 from pydub import AudioSegment
+from scipy.io import loadmat
 
 class Audio:
 
@@ -47,3 +48,16 @@ class Audio:
     audio = audio.pan(location)
     # audio.export(f"{self.name}_panned_{section}.wav", format="wav")
     return audio
+
+  def run_hrtf(self):
+    """Load in and initialize the relevant variables from the HRTF"""
+    hrtf = loadmat("CIPIC_58_HRTF.mat")
+    hrir_r = hrtf["hrir_r"]
+    hrir_l = hrtf["hrir_l"]
+    ITD = hrtf["ITD"]  # 2D array with many columns/rows
+    aIndex = 0
+    eIndex = 9
+    lft = np.squeeze(hrir_l[aIndex, eIndex, :])
+    rgt = np.squeeze(hrir_r[aIndex, eIndex, :])
+    self.left_channel = np.asarray(convolve(self.left_channel, lft))
+    self.right_channel = np.asarray(convolve(self.right_channel, rgt))

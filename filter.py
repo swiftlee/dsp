@@ -12,9 +12,9 @@ def match_target_amplitude(sound, target_dBFS):
 
 def run():
   songs = {
-    "A Gift Of Thistle-Gatorchestrators Filter.wav": "thistle.wav",
-    "A Knight of the Seven Kingdoms-Gatorchestrators Filter.wav": "kingdoms.wav",
-    "Truth-Gatorchestrators Filter.wav": "truth.wav"
+    "A-Gift-Of-Thistle-Gatorchestrators-Filter.wav": "thistle.wav",
+    "A-Knight-of-the-Seven-Kingdoms-Gatorchestrators-Filter.wav": "kingdoms.wav",
+    "Truth-Gatorchestrators-Filter.wav": "truth.wav"
   }
 
   instruments = {
