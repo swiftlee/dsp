@@ -1,0 +1,1 @@
+left_max: -3275 right_max: -8847 ITD: 5745.8125

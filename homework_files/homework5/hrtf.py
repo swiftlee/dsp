@@ -2,7 +2,7 @@ from scipy.io import loadmat
 import json
 from measurements import users, john_doe
 
-anthro = loadmat("./CIPIC_hrtf_database/anthropometry/anthro.mat")
+anthro = loadmat("../../CIPIC_hrtf_database/anthropometry/anthro.mat")
 
 
 def comparison(key, pinna, body, angles):
