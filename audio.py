@@ -51,7 +51,7 @@ class Audio:
 
   def run_hrtf(self):
     """Load in and initialize the relevant variables from the HRTF"""
-    hrtf = loadmat("CIPIC_58_HRTF.mat")
+    hrtf = loadmat("./CIPIC_files/CIPIC_58_HRTF.mat")
     hrir_r = hrtf["hrir_r"]
     hrir_l = hrtf["hrir_l"]
     ITD = hrtf["ITD"]  # 2D array with many columns/rows
